@@ -1,4 +1,5 @@
-var crypto = require('crypto');
+var crypto = require('crypto'),
+	express = require('express');
 
 exports.ngCsrf = function () {
 	return express.csrf({value: function (req) {
