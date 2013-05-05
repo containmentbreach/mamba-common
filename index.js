@@ -1,6 +1,8 @@
 var crypto = require('crypto'),
 	express = require('express');
 
+exports.publicPath = path.join(__dirname, 'public');
+
 exports.ngCsrf = function () {
 	return express.csrf({value: function (req) {
 		return req.get('x-xsrf-token');
