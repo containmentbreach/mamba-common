@@ -95,18 +95,6 @@ angular.module('mamba', ['ngResource']).
 					});
 			};
 		});
-
-		$routeProvider.
-			when('/', {_tab: 'intro'}).
-			when('/search', {controller: 'SearchCtrl', templateUrl: 'search.html',
-				reloadOnSearch: false, _tab: 'search'}).
-			when('/hits', {controller: 'HitsCtrl', templateUrl: 'userlist.html', _tab: 'hits'}).
-			when('/contacts', {controller: 'ContactsCtrl', templateUrl: 'contacts.html',
-				reloadOnSearch: false, _tab: 'contacts'}).
-			when('/adm', {controller: 'AdmCtrl', templateUrl: 'adm.html', _tab: 'adm'}).
-			when('/profile', {controller: 'ProfileCtrl', templateUrl: 'profile.html', _tab: 'profile'}).
-			when('/tests/:test', {controller: 'TestCtrl', templateUrl: 'test.html', _tab: 'test'}).
-			otherwise({redirectTo:'/'});
 	}).run(function ($rootScope, $location) {
 		$rootScope.extra = URI('?' + URI().search(true).extra).search(true);
 	});
