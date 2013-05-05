@@ -1,5 +1,10 @@
 var crypto = require('crypto');
 
+exports.ngCsrf = function () {
+	return express.csrf({value: function (req) {
+		return req.get('x-xsrf-token');
+	}});
+}
 
 exports.validRequest = function (req, key) {
 	if (!key) key = 'auth_key';
