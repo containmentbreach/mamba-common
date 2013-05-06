@@ -1,7 +1,7 @@
 var crypto = require('crypto'),
 	express = require('express');
 
-exports.publicPath = path.join(__dirname, 'public');
+exports.publicDir = path.join(__dirname, 'public');
 
 exports.ngCsrf = function () {
 	return express.csrf({value: function (req) {
@@ -24,6 +24,12 @@ exports.validRequest = function (req, key) {
 
 var signature = exports.signature = function (req) {
 	return Object.keys(req).sort().reduce(
-		function (h, k) { return h.update(k + "=" + req[k], 'utf8') }, crypto.createHash('md5')).
+		function (h, k) { return h.update(k + '=' + req[k], 'utf8') }, crypto.createHash('md5')).
 			update(process.env.SECRET_KEY).digest('hex');
+}
+
+exports.connect = function (uri, cb) {
+    require('massive').connect(uri, function(err, db) {
+        return cb(err, db);
+    });
 }
