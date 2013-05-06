@@ -1,5 +1,6 @@
 var crypto = require('crypto'),
-	express = require('express');
+	express = require('express'),
+	path = require('path');
 
 exports.publicDir = path.join(__dirname, 'public');
 
