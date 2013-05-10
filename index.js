@@ -4,6 +4,10 @@ var crypto = require('crypto'),
 
 exports.publicDir = path.join(__dirname, 'public');
 
+express.logger.token('oid', function (req, res) { return (req.session && req.session.oid) || req.query.oid || '-'; });
+express.logger.format('mamba', ':remote-addr/:oid ":method :url" :status :response-time ms ":user-agent"');
+
+
 exports.ngCsrf = function () {
 	return express.csrf({value: function (req) {
 		return req.get('x-xsrf-token');
