@@ -18,14 +18,14 @@ angular.module('mamba', ['ngResource']).
 			var that = this;
 			mamba.api(opts,
 				function (err, data) {
-					that.unreg();
-					$rootScope.$digest();
-					if (callback) {
-						callback(err, data);
-						$rootScope.$digest();
-					} else if (err) {
-						throw err;
-					}
+					$rootScope.$apply(function () {
+						that.unreg();
+						if (callback) {
+							callback(err, data);
+						} else if (err) {
+							throw err;
+						}
+					});
 				});
 		};
 	}).
