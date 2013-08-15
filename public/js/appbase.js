@@ -1,15 +1,16 @@
 angular.module('mamba', ['ngResource']).
 	value('NOPHOTO_MEDIUM', '//images.mamba.ru/images/default/default/photo_big_na.gif').
-	service('$indicator', function($rootScope) {
-		$rootScope.nPendingReq = 0;
+	service('$indicator', function($http, $rootScope) {
+		this.nPending = 0;
 
+		this.busy = function () {
+			return this.nPending + $http.pendingRequests.length;
+		};
 		this.reg = function() {
-			$rootScope.nPendingReq++;
-			$rootScope.indicatorVisible = true;
+			this.nPending++;
 		};
 		this.unreg = function() {
-			$rootScope.nPendingReq--;
-			$rootScope.indicatorVisible = $rootScope.nPendingReq > 0;
+			this.nPending--;
 		};
 		this.mamba = function(method, opts, callback) {
 			opts = angular.copy(opts);
@@ -29,21 +30,11 @@ angular.module('mamba', ['ngResource']).
 				});
 		};
 	}).
-	config(function($routeProvider, $httpProvider) {
-		$httpProvider.responseInterceptors.push(function($q, $indicator) {
-			return function(promise) {
-				$indicator.reg();
-				return promise.then(
-					function(response) {
-						$indicator.unreg();
-						return response;
-					}, function(response) {
-						$indicator.unreg();
-						return $q.reject(response);
-					});
-			};
-		});
-	}).run(function ($rootScope) {
+	config(function($httpProvider) {
+
+	}).run(function ($rootScope, $indicator) {
+		$rootScope.busy = angular.bind($indicator, $indicator.busy);
+
 		$rootScope.location = URI();
 		$rootScope.locationQuery = $rootScope.location.query(true);
 		$rootScope.oid = $rootScope.locationQuery.oid;
