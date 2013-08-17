@@ -1,6 +1,6 @@
 angular.module('mamba', ['ngResource']).
 	value('NOPHOTO_MEDIUM', '//images.mamba.ru/images/default/default/photo_big_na.gif').
-	service('$indicator', function($http, $rootScope) {
+	service('$indicator', function($http) {
 		this.nPending = 0;
 
 		this.busy = function () {
@@ -12,15 +12,17 @@ angular.module('mamba', ['ngResource']).
 		this.unreg = function() {
 			this.nPending--;
 		};
-		this.mamba = function(method, opts, callback) {
+	}).
+	service('$mamba', function($rootScope, $indicator) {
+		this.api = function(method, opts, callback) {
 			opts = angular.copy(opts);
 			opts.method = method;
-			this.reg();
+			$indicator.reg();
 			var that = this;
 			mamba.api(opts,
 				function (err, data) {
 					$rootScope.$apply(function () {
-						that.unreg();
+						$indicator.unreg();
 						if (callback) {
 							callback(err, data);
 						} else if (err) {
@@ -31,7 +33,33 @@ angular.module('mamba', ['ngResource']).
 		};
 	}).
 	config(function($httpProvider) {
-
+		$httpProvider.interceptors.push(function($q) {
+			return {
+				request: function(config) {
+					if (config.params) {
+						var range = config.params._range;
+						delete config.params._range;
+						if (range)
+							config.headers['Range'] = 'items=' + range.start + '-' + range.end;
+					}
+					return config;
+				},
+				response: function(response) {
+					var rng = response.headers('Content-Range');
+					if (rng) {
+						var m = rng.match(/^items=(\d+)-(\d+)\/(\d+)/);
+						if (m) {
+							var rng = {start: m[1], end: m[2], total: m[3]};
+							var _h = response.headers;
+							response.headers = function (h) {
+								return h === '_range' ? rng : _h(h);
+							};
+						}
+					}
+					return response;
+				}
+			};
+		});
 	}).run(function ($rootScope, $indicator) {
 		$rootScope.busy = angular.bind($indicator, $indicator.busy);
 
