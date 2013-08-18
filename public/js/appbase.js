@@ -10,7 +10,7 @@ angular.module('mamba', ['ngResource']).
 			this.nPending++;
 		};
 		this.unreg = function() {
-			this.nPending--;
+			this.nPending = Math.max(this.nPending - 1, 0);
 		};
 	}).
 	service('$mamba', function($rootScope, $indicator) {
@@ -18,7 +18,6 @@ angular.module('mamba', ['ngResource']).
 			opts = angular.copy(opts);
 			opts.method = method;
 			$indicator.reg();
-			var that = this;
 			mamba.api(opts,
 				function (err, data) {
 					$rootScope.$apply(function () {
